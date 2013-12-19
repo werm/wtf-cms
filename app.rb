@@ -3,6 +3,8 @@ require 'sinatra/activerecord'
 require './environment'
 require 'sinatra/flash'
 require 'sinatra/redirect_with_flash'
+require 'date'
+require 'time'
 
 enable :sessions
 
@@ -26,19 +28,26 @@ helpers do
 
 end # /helpers
 
-# get ALL posts
-get "/" do
-  @posts = Post.order("created_at DESC")
-  @title = "Welcome."
-  erb :"posts/index"
+###
+# API
+###
+
+get "/api/posts" do
+  @posts = Post.order("created_at DESC").to_json
+end
+
+get "/api/posts/:id" do
+  @post = Post.find(params[:id]).to_json
 end
 
 # create new post
 get "/posts/create" do
   @title = "Create post"
   @post = Post.new
+  @posted = post_converted_time
   erb :"posts/create"
 end
+
 post "/posts" do
   @post = Post.new(params[:post])
   if @post.save
@@ -48,12 +57,21 @@ post "/posts" do
   end
 end
 
-# view post
-get "/posts/:id" do
-  @post = Post.find(params[:id])
-  @title = @post.title
-  erb :"posts/view"
+# get ALL posts
+get '/' do
+  File.read(File.join('public', 'index.html'))
 end
+
+get '/posts/*' do
+  File.read(File.join('public', 'index.html'))
+end
+
+# # view post
+# get "/posts/:id" do
+#   @post = Post.find(params[:id])
+#   @title = @post.title
+#   erb :"posts/view"
+# end
 
 # edit post
 get "/posts/:id/edit" do
@@ -61,6 +79,7 @@ get "/posts/:id/edit" do
   @title = "Edit Form"
   erb :"posts/edit"
 end
+
 put "/posts/:id" do
   @post = Post.find(params[:id])
   @post.update(params[:post])
