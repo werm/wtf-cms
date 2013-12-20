@@ -10,13 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131219153459) do
+ActiveRecord::Schema.define(version: 20131220173404) do
+
+  create_table "clients", force: true do |t|
+    t.string "full_name"
+    t.string "email"
+    t.string "phone_number"
+    t.text   "description"
+  end
+
+  add_index "clients", ["email", "full_name"], name: "index_clients_on_email_and_full_name", using: :btree
+
+  create_table "contacts", force: true do |t|
+    t.string "full_name"
+    t.string "email"
+    t.string "phone_number"
+    t.text   "description"
+  end
+
+  add_index "contacts", ["email", "full_name"], name: "index_contacts_on_email_and_full_name", using: :btree
 
   create_table "posts", force: true do |t|
     t.string   "title"
     t.text     "body"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "public"
+    t.datetime "published_at"
+    t.string   "image"
+    t.string   "category"
+    t.string   "author"
   end
 
 end
